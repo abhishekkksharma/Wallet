@@ -1,0 +1,152 @@
+import React, { useState, useEffect } from 'react';
+import { Menu, Search, X } from 'lucide-react';
+import { supabase } from '../supabaseClient';
+import { useNavigate } from 'react-router-dom';
+
+const Navbar = () => {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
+
+  // Handle scroll effect for navbar shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white
+        ${scrolled ? 'shadow-md py-2' : 'border-b border-gray-100 py-4'}
+      `}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+
+          {/* LEFT SIDE: Avatar & Greeting */}
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <img
+                src={user?.user_metadata?.avatar_url || "https://i.pinimg.com/736x/ff/c1/55/ffc155f86f4a96ebd68741b72461d387.jpg"}
+                alt="User Avatar"
+                className="h-12 w-12 rounded-full object-cover border-2 border-white shadow-sm"
+              />
+            </div>
+
+            <div className="flex flex-col justify-center">
+              <span className="text-xl  font-semibold text-gray-900 leading-none">
+                <span className='font-light'>Hello</span>, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest'}
+              </span>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE: Search & Hamburger */}
+          <div className="flex items-center gap-4">
+
+            {/* Search Button (Expandable) */}
+            <div className={`
+              flex items-center transition-all duration-300 ease-in-out bg-white rounded-full
+              ${isSearchOpen ? 'w-48 sm:w-64 px-2 py-1 border border-gray-200 shadow-sm' : 'w-10 h-10 justify-center cursor-pointer'}
+            `}>
+              {isSearchOpen ? (
+                <>
+                  <Search size={20} className="text-gray-400 min-w-[20px]" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="ml-2 bg-transparent border-none outline-none text-sm text-gray-700 w-full placeholder-gray-400"
+                    autoFocus
+                    onBlur={() => !window.getSelection().toString() && setIsSearchOpen(false)}
+                  />
+                </>
+              ) : (
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="w-full h-full flex items-center justify-center text-gray-800 hover:text-gray-600 transition-colors"
+                >
+                  <Search size={24} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+
+            {/* Hamburger Menu (Replaces Bell) */}
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="w-10 h-10 flex items-center justify-center text-gray-800 hover:text-gray-600 transition-colors"
+            >
+              <Menu size={28} strokeWidth={2.5} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide-out Menu Drawer */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-[60] flex justify-end">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsMenuOpen(false)}
+          />
+
+          {/* Menu Content */}
+          <div className="relative w-64 bg-white h-full shadow-2xl p-6 flex flex-col animate-in slide-in-from-right duration-200">
+            <div className="flex justify-between items-center mb-8">
+              <span className="text-lg font-bold text-gray-900">Menu</span>
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <nav className="flex flex-col space-y-5">
+              {['Dashboard', 'Profile', 'Messages', 'Settings'].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="text-lg font-medium text-gray-600 hover:text-gray-900 hover:translate-x-1 transition-all"
+                >
+                  {item}
+                </a>
+              ))}
+              <button
+                onClick={handleLogout}
+                className="text-lg font-medium text-gray-600 hover:text-gray-900 hover:translate-x-1 transition-all text-left"
+              >
+                Log Out
+              </button>
+            </nav>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+export default Navbar;
