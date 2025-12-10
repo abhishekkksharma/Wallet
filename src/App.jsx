@@ -5,7 +5,7 @@ import { persistor } from './store/store'
 import './App.css'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import Loader from './components/Loader'
+import Loader from './Components/Loader'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCards } from '../store/cards';
 import { fetchFolders, addFolder } from '../store/folders';
-import Navbar from '../components/Navbar';
-import FlipCard from '../components/Card';
-import AddCardModal from '../components/AddCardModal';
-import Folder from '../components/Folder';
+import Navbar from '../Components/Navbar';
+import FlipCard from '../Components/Card';
+import AddCardModal from '../Components/AddCardModal';
+import Folder from '../Components/Folder';
 import { Plus, ArrowLeft } from 'lucide-react';
-import Loader from '../components/Loader';
+import Loader from '../Components/Loader';
 
 const Dashboard = () => {
     const dispatch = useDispatch()
