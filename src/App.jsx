@@ -11,6 +11,7 @@ import AddCardModal from './Components/AddCardModal'
 import Folder from './Components/Folder'
 import { Plus, ArrowLeft } from 'lucide-react'
 import { fetchFolders, addFolder } from './folders'
+import Loader from './Components/Loader'
 
 const ProtectedRoute = ({ children }) => {
   const [session, setSession] = useState(null)
@@ -32,7 +33,11 @@ const ProtectedRoute = ({ children }) => {
   }, [])
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <Loader size="large" />
+      </div>
+    )
   }
 
   if (!session) {
@@ -126,6 +131,11 @@ const Dashboard = () => {
                   <p>Create a folder or add a card to get started.</p>
                 </div>
               )}
+              {folderStatus === 'loading' && (
+                <div className="col-span-full flex justify-center mt-20">
+                  <Loader size="large" />
+                </div>
+              )}
             </div>
           )}
 
@@ -150,7 +160,7 @@ const Dashboard = () => {
               {/* Loading State */}
               {cardStatus === 'loading' && (
                 <div className="col-span-full flex justify-center mt-20">
-                  <p className="text-gray-500">Loading cards...</p>
+                  <Loader size="large" />
                 </div>
               )}
             </div>

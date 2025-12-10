@@ -14,7 +14,67 @@ const CameraCapture = ({ onCapture, onClose }) => {
 
     const capture = useCallback(() => {
         const imageSrc = webcamRef.current.getScreenshot();
-        onCapture(imageSrc);
+        const video = webcamRef.current.video;
+
+        if (!imageSrc || !video) return;
+
+        // Get the actual video dimensions
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+
+        // Get the screen/container dimensions
+        // Since the component is fixed inset-0, we can use window dimensions
+        const containerWidth = window.innerWidth;
+        const containerHeight = window.innerHeight;
+
+        // Calculate the scale factor that 'object-cover' applies
+        // object-cover scales the image to cover the container while maintaining aspect ratio
+        const scale = Math.max(containerWidth / videoWidth, containerHeight / videoHeight);
+
+        // Calculate the dimensions of the video as displayed on screen
+        const displayedWidth = videoWidth * scale;
+        const displayedHeight = videoHeight * scale;
+
+        // Calculate the offset (how much is cropped out by CSS)
+        const offsetX = (displayedWidth - containerWidth) / 2;
+        const offsetY = (displayedHeight - containerHeight) / 2;
+
+        // The guide box dimensions (must match the CSS)
+        const boxWidth = 350;
+        const boxHeight = 220;
+
+        // Calculate the guide box position relative to the container
+        const boxLeft = (containerWidth - boxWidth) / 2;
+        const boxTop = (containerHeight - boxHeight) / 2;
+
+        // Map the guide box coordinates to the video source coordinates
+        // 1. Add offset to get position relative to the displayed video
+        // 2. Divide by scale to get position in the source video
+        const sourceX = (boxLeft + offsetX) / scale;
+        const sourceY = (boxTop + offsetY) / scale;
+        const sourceWidth = boxWidth / scale;
+        const sourceHeight = boxHeight / scale;
+
+        const image = new Image();
+        image.src = imageSrc;
+        image.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size to the desired output size (we can keep it high res)
+            // Let's use 2x the box size for good quality
+            canvas.width = boxWidth * 2;
+            canvas.height = boxHeight * 2;
+
+            ctx.drawImage(
+                image,
+                sourceX, sourceY, sourceWidth, sourceHeight, // Source crop
+                0, 0, canvas.width, canvas.height            // Destination
+            );
+
+            const croppedImage = canvas.toDataURL('image/jpeg', 0.9);
+            onCapture(croppedImage);
+        };
     }, [webcamRef, onCapture]);
 
     const switchCamera = () => {
