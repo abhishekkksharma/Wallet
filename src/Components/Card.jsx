@@ -47,228 +47,41 @@ const FlipCard = ({ id, frontImage, backImage }) => {
   };
 
   return (
-    <div className="card-wrapper">
-      {/* Embedded CSS for single-file portability */}
-      <style>{`
-        :root {
-          --card-width: 350px;
-          --card-height: 220px;
-          --primary-color: #3b82f6;
-          --bg-color: #f3f4f6;
-          --text-color: #1f2937;
-          --fab-size: 48px;
-        }
-
-        .card-wrapper {
-          position: relative;
-          margin: 20px;
-        }
-
-        /* --- 3D SCENE & CARD STYLES --- */
-        .scene {
-          width: var(--card-width);
-          height: var(--card-height);
-          perspective: 1000px;
-          cursor: pointer;
-          z-index: 10;
-        }
-
-        .card {
-          width: 100%;
-          height: 100%;
-          position: relative;
-          transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          transform-style: preserve-3d;
-          border-radius: 16px;
-          box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
-        }
-
-        .card.is-flipped {
-          transform: rotateY(180deg);
-        }
-
-        .card-face {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-          border-radius: 16px;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: white;
-          border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .card-front {
-          background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-          z-index: 2;
-        }
-
-        .card-back {
-          transform: rotateY(180deg);
-          background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
-        }
-
-        .card-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          pointer-events: none;
-        }
-
-        .placeholder {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          color: #9ca3af;
-          text-align: center;
-          padding: 20px;
-        }
-
-        .placeholder p {
-          margin-top: 10px;
-          font-size: 0.9rem;
-        }
-
-        /* --- FAB (Floating Action Button) STYLES --- */
-        .fab-container {
-          position: absolute;
-          bottom: -20px;
-          right: -20px;
-          display: flex;
-          flex-direction: column-reverse;
-          align-items: center;
-          gap: 10px;
-          z-index: 50;
-        }
-
-        .fab-main {
-          width: var(--fab-size);
-          height: var(--fab-size);
-          border-radius: 50%;
-          background-color: var(--primary-color);
-          color: white;
-          border: none;
-          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .fab-main:hover {
-          transform: scale(1.1);
-        }
-
-        .fab-main.open {
-          transform: rotate(45deg);
-          background-color: #ef4444; /* Red when open/close action */
-          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-        }
-
-        .fab-menu {
-          display: flex;
-          flex-direction: column-reverse;
-          gap: 10px;
-          align-items: flex-end;
-          margin-bottom: 5px;
-        }
-
-        .fab-item-row {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          opacity: 0;
-          transform: translateY(20px) scale(0.8);
-          animation: slideUp 0.3s forwards;
-        }
-
-        .fab-item-row:nth-child(1) { animation-delay: 0.05s; }
-        .fab-item-row:nth-child(2) { animation-delay: 0.1s; }
-        .fab-item-row:nth-child(3) { animation-delay: 0.15s; }
-
-        @keyframes slideUp {
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        .fab-btn {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          border: none;
-          color: white;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-          transition: transform 0.2s;
-        }
-
-        .fab-btn:hover {
-          transform: scale(1.1);
-        }
-
-        .btn-front { background-color: #10b981; }
-        .btn-back { background-color: #8b5cf6; }
-        .btn-delete { background-color: #ef4444; }
-
-        .fab-label {
-          background: white;
-          padding: 4px 8px;
-          border-radius: 6px;
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: #4b5563;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          pointer-events: none;
-          white-space: nowrap;
-        }
-
-        .hidden-input {
-          display: none;
-        }
-
-        /* --- RESPONSIVE SCALING --- */
-        @media (max-width: 400px) {
-          .scene {
-            width: 80vw;
-            height: calc(80vw * 0.63);
-          }
-        }
-      `}</style>
+    <div className="relative m-5">
 
       {/* 3D Scene Container */}
-      <div className="scene" onClick={() => setIsFlipped(!isFlipped)}>
-        <div className={`card ${isFlipped ? 'is-flipped' : ''}`}>
+      <div
+        className="w-[350px] h-[220px] max-w-[80vw] max-h-[calc(80vw*0.63)] [perspective:1000px] cursor-pointer z-10"
+        onClick={() => setIsFlipped(!isFlipped)}
+      >
+        <div
+          className={`
+            w-full h-full relative transition-transform duration-700 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] 
+            [transform-style:preserve-3d] rounded-2xl shadow-xl
+            ${isFlipped ? '[transform:rotateY(180deg)]' : ''}
+          `}
+        >
 
           {/* Front Face */}
-          <div className="card-face card-front">
+          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white border border-black/5 bg-gradient-to-br from-white to-gray-100 z-[2]">
             {frontImage ? (
-              <img src={frontImage} alt="Front" className="card-image" />
+              <img src={frontImage} alt="Front" className="w-full h-full object-cover pointer-events-none" />
             ) : (
-              <div className="placeholder">
+              <div className="flex flex-col items-center text-gray-400 text-center p-5">
                 <ImageIcon size={48} />
-                <p>Front Side</p>
+                <p className="mt-2 text-sm">Front Side</p>
               </div>
             )}
           </div>
 
           {/* Back Face */}
-          <div className="card-face card-back">
+          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white border border-black/5 [transform:rotateY(180deg)] bg-gradient-to-br from-gray-200 to-gray-300">
             {backImage ? (
-              <img src={backImage} alt="Back" className="card-image" />
+              <img src={backImage} alt="Back" className="w-full h-full object-cover pointer-events-none" />
             ) : (
-              <div className="placeholder">
+              <div className="flex flex-col items-center text-gray-400 text-center p-5">
                 <Camera size={48} />
-                <p>Back Side</p>
+                <p className="mt-2 text-sm">Back Side</p>
               </div>
             )}
           </div>
@@ -277,31 +90,40 @@ const FlipCard = ({ id, frontImage, backImage }) => {
       </div>
 
       {/* Floating Action Button Menu */}
-      <div className="fab-container">
+      <div className="absolute -bottom-5 -right-5 flex flex-col-reverse items-center gap-2.5 z-50">
 
         {isMenuOpen && (
-          <div className="fab-menu">
+          <div className="flex flex-col-reverse gap-2.5 items-end mb-1.5">
 
             {/* Delete Option */}
-            <div className="fab-item-row">
-              <span className="fab-label">Delete</span>
-              <button className="fab-btn btn-delete" onClick={handleDelete}>
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-150">
+              <span className="bg-white px-2 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-sm pointer-events-none whitespace-nowrap">Delete</span>
+              <button
+                className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-red-500"
+                onClick={handleDelete}
+              >
                 <Trash2 size={18} />
               </button>
             </div>
 
             {/* Back Image Option */}
-            <div className="fab-item-row">
-              <span className="fab-label">Back</span>
-              <button className="fab-btn btn-back" onClick={() => triggerUpload(backInputRef)}>
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-100">
+              <span className="bg-white px-2 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-sm pointer-events-none whitespace-nowrap">Back</span>
+              <button
+                className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-violet-500"
+                onClick={() => triggerUpload(backInputRef)}
+              >
                 <Camera size={18} />
               </button>
             </div>
 
             {/* Front Image Option */}
-            <div className="fab-item-row">
-              <span className="fab-label">Front</span>
-              <button className="fab-btn btn-front" onClick={() => triggerUpload(frontInputRef)}>
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-75">
+              <span className="bg-white px-2 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-sm pointer-events-none whitespace-nowrap">Front</span>
+              <button
+                className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-emerald-500"
+                onClick={() => triggerUpload(frontInputRef)}
+              >
                 <FileImage size={18} />
               </button>
             </div>
@@ -311,7 +133,11 @@ const FlipCard = ({ id, frontImage, backImage }) => {
 
         {/* Main Toggle Button */}
         <button
-          className={`fab-main ${isMenuOpen ? 'open' : ''}`}
+          className={`
+            w-12 h-12 rounded-full text-white border-none shadow-lg cursor-pointer flex items-center justify-center 
+            transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:scale-110
+            ${isMenuOpen ? 'rotate-45 bg-red-500 shadow-red-500/40' : 'bg-blue-500 shadow-blue-500/40'}
+          `}
           onClick={(e) => {
             e.stopPropagation();
             setIsMenuOpen(!isMenuOpen);
@@ -327,14 +153,14 @@ const FlipCard = ({ id, frontImage, backImage }) => {
         ref={frontInputRef}
         onChange={(e) => handleImageUpload(e, 'front')}
         accept="image/*"
-        className="hidden-input"
+        className="hidden"
       />
       <input
         type="file"
         ref={backInputRef}
         onChange={(e) => handleImageUpload(e, 'back')}
         accept="image/*"
-        className="hidden-input"
+        className="hidden"
       />
 
     </div>

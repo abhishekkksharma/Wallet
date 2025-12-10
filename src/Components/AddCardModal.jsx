@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Camera, FileImage, Upload, Plus } from 'lucide-react';
+import { X, Camera, FileImage, Upload, Plus, Smartphone } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCard } from '../cards';
 import { fetchFolders, addFolder } from '../folders';
+import CameraCapture from './CameraCapture';
 
 const AddCardModal = ({ isOpen, onClose }) => {
     const [frontImage, setFrontImage] = useState(null);
@@ -11,6 +12,10 @@ const AddCardModal = ({ isOpen, onClose }) => {
     const [selectedFolderId, setSelectedFolderId] = useState('');
     const [newFolderName, setNewFolderName] = useState('');
     const [isAddingFolder, setIsAddingFolder] = useState(false);
+
+    // Camera State
+    const [showCamera, setShowCamera] = useState(false);
+    const [activeSide, setActiveSide] = useState(null); // 'front' or 'back'
 
     const dispatch = useDispatch();
     const { items: folders } = useSelector((state) => state.folders);
@@ -37,6 +42,18 @@ const AddCardModal = ({ isOpen, onClose }) => {
             else setBackImage(reader.result);
         };
         reader.readAsDataURL(file);
+    };
+
+    const handleCameraCapture = (imageSrc) => {
+        if (activeSide === 'front') setFrontImage(imageSrc);
+        else setBackImage(imageSrc);
+        setShowCamera(false);
+        setActiveSide(null);
+    };
+
+    const openCamera = (side) => {
+        setActiveSide(side);
+        setShowCamera(true);
     };
 
     const handleSubmit = async () => {
@@ -128,68 +145,89 @@ const AddCardModal = ({ isOpen, onClose }) => {
                     {/* Front Image Upload */}
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Front Image</label>
-                        <div
-                            onClick={() => frontInputRef.current.click()}
-                            className={`
-                relative h-40 rounded-xl border-2 border-dashed border-gray-300 
-                flex flex-col items-center justify-center cursor-pointer
-                hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden
-                ${frontImage ? 'border-solid border-blue-500' : ''}
-              `}
-                        >
-                            {frontImage ? (
-                                <img src={frontImage} alt="Front Preview" className="w-full h-full object-cover" />
-                            ) : (
-                                <>
-                                    <div className="p-3 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors mb-2">
-                                        <FileImage className="text-gray-400 group-hover:text-blue-500" size={24} />
-                                    </div>
-                                    <span className="text-sm text-gray-500 group-hover:text-blue-600">Click to upload front</span>
-                                </>
-                            )}
-                            <input
-                                type="file"
-                                ref={frontInputRef}
-                                onChange={(e) => handleImageUpload(e, 'front')}
-                                accept="image/*"
-                                className="hidden"
-                            />
+                        <div className="flex gap-2">
+                            <div
+                                onClick={() => frontInputRef.current.click()}
+                                className={`
+                  flex-1 relative h-40 rounded-xl border-2 border-dashed border-gray-300 
+                  flex flex-col items-center justify-center cursor-pointer
+                  hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden
+                  ${frontImage ? 'border-solid border-blue-500' : ''}
+                `}
+                            >
+                                {frontImage ? (
+                                    <img src={frontImage} alt="Front Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <>
+                                        <div className="p-3 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors mb-2">
+                                            <FileImage className="text-gray-400 group-hover:text-blue-500" size={24} />
+                                        </div>
+                                        <span className="text-sm text-gray-500 group-hover:text-blue-600">Upload Image</span>
+                                    </>
+                                )}
+                                <input
+                                    type="file"
+                                    ref={frontInputRef}
+                                    onChange={(e) => handleImageUpload(e, 'front')}
+                                    accept="image/*"
+                                    className="hidden"
+                                />
+                            </div>
+
+                            <button
+                                onClick={() => openCamera('front')}
+                                className="w-16 h-40 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all text-gray-400 hover:text-blue-500"
+                                title="Take Photo"
+                            >
+                                <Smartphone size={24} />
+                                <span className="text-xs mt-1">Camera</span>
+                            </button>
                         </div>
                     </div>
 
                     {/* Back Image Upload */}
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Back Image</label>
-                        <div
-                            onClick={() => backInputRef.current.click()}
-                            className={`
-                relative h-40 rounded-xl border-2 border-dashed border-gray-300 
-                flex flex-col items-center justify-center cursor-pointer
-                hover:border-purple-500 hover:bg-purple-50 transition-all group overflow-hidden
-                ${backImage ? 'border-solid border-purple-500' : ''}
-              `}
-                        >
-                            {backImage ? (
-                                <img src={backImage} alt="Back Preview" className="w-full h-full object-cover" />
-                            ) : (
-                                <>
-                                    <div className="p-3 rounded-full bg-gray-100 group-hover:bg-purple-100 transition-colors mb-2">
-                                        <Camera className="text-gray-400 group-hover:text-purple-500" size={24} />
-                                    </div>
-                                    <span className="text-sm text-gray-500 group-hover:text-purple-600">Click to upload back</span>
-                                </>
-                            )}
-                            <input
-                                type="file"
-                                ref={backInputRef}
-                                onChange={(e) => handleImageUpload(e, 'back')}
-                                accept="image/*"
-                                className="hidden"
-                            />
-                        </div>
-                    </div>
+                        <div className="flex gap-2">
+                            <div
+                                onClick={() => backInputRef.current.click()}
+                                className={`
+                  flex-1 relative h-40 rounded-xl border-2 border-dashed border-gray-300 
+                  flex flex-col items-center justify-center cursor-pointer
+                  hover:border-purple-500 hover:bg-purple-50 transition-all group overflow-hidden
+                  ${backImage ? 'border-solid border-purple-500' : ''}
+                `}
+                            >
+                                {backImage ? (
+                                    <img src={backImage} alt="Back Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <>
+                                        <div className="p-3 rounded-full bg-gray-100 group-hover:bg-purple-100 transition-colors mb-2">
+                                            <FileImage className="text-gray-400 group-hover:text-purple-500" size={24} />
+                                        </div>
+                                        <span className="text-sm text-gray-500 group-hover:text-purple-600">Upload Image</span>
+                                    </>
+                                )}
+                                <input
+                                    type="file"
+                                    ref={backInputRef}
+                                    onChange={(e) => handleImageUpload(e, 'back')}
+                                    accept="image/*"
+                                    className="hidden"
+                                />
+                            </div>
 
-                </div>
+                            <button
+                                onClick={() => openCamera('back')}
+                                className="w-16 h-40 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-purple-500 hover:bg-purple-50 transition-all text-gray-400 hover:text-purple-500"
+                                title="Take Photo"
+                            >
+                                <Smartphone size={24} />
+                                <span className="text-xs mt-1">Camera</span>
+                            </button>
+                        </div>
+                    </div>              </div>
+
 
                 {/* Footer */}
                 <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
@@ -214,6 +252,17 @@ const AddCardModal = ({ isOpen, onClose }) => {
                 </div>
 
             </div>
+
+            {/* Camera Modal */}
+            {showCamera && (
+                <CameraCapture
+                    onCapture={handleCameraCapture}
+                    onClose={() => {
+                        setShowCamera(false);
+                        setActiveSide(null);
+                    }}
+                />
+            )}
         </div>
     );
 };

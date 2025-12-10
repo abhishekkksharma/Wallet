@@ -83,7 +83,7 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <div className='min-h-screen bg-gray-100 pt-24 px-4 pb-12'>
+      <div className='min-h-screen  lg:m-10 pt-24 px-8 pb-12'>
 
         {/* Header Section */}
         <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">
@@ -96,22 +96,22 @@ const Dashboard = () => {
                 <ArrowLeft size={24} />
               </button>
             )}
-            <h1 className="text-3xl font-bold text-gray-800">
+            {/* <h1 className="text-3xl font-bold text-gray-800">
               {currentFolder ? currentFolder.name : 'My Folders'}
-            </h1>
+            </h1> */}
           </div>
 
-          {!currentFolder && (
+          {/* {!currentFolder && (
             <h2 className="text-xl text-gray-500 font-medium">Select a folder</h2>
-          )}
+          )} */}
         </div>
 
         {/* Content Area */}
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-8xl mx-auto">
 
           {/* Folders Grid (Root View) */}
           {!currentFolder && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 justify-items-center">
               {folders.map((folder) => (
                 <Folder
                   key={folder.id}

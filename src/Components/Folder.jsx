@@ -4,7 +4,7 @@ const Folder = ({ name, onClick }) => {
     return (
         <div
             onClick={onClick}
-            className="group relative w-full max-w-[200px] aspect-[4/3] cursor-pointer transition-transform hover:scale-105"
+            className="group relative w-full max-w-[300px] aspect-[4/3] cursor-pointer transition-transform hover:scale-105"
         >
             {/* Back Plate */}
             <div className="absolute top-0 left-0 w-full h-full bg-gray-800 rounded-xl shadow-lg transform translate-y-1"></div>
