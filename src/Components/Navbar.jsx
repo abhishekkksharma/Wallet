@@ -65,7 +65,7 @@ const Navbar = () => {
             </button>
 
             {/* Search Button (Expandable) */}
-            <div className={`
+            {/* <div className={`
               flex items-center transition-all duration-300 ease-in-out bg-white dark:bg-black rounded-full
               ${isSearchOpen ? 'w-48 sm:w-64 px-2 py-1 border border-gray-200 shadow-sm' : 'w-10 h-10 justify-center cursor-pointer'}
             `}>
@@ -88,7 +88,7 @@ const Navbar = () => {
                   <Search size={24} strokeWidth={2.5} />
                 </button>
               )}
-            </div>
+            </div> */}
 
             {/* Hamburger Menu (Replaces Bell) */}
             <button
