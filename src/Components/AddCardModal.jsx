@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Camera, FileImage, Upload, Plus, Smartphone } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCard } from '../cards';
-import { fetchFolders, addFolder } from '../folders';
+import { addCard } from '../store/cards';
+import { fetchFolders, addFolder } from '../store/folders';
 import CameraCapture from './CameraCapture';
 import Loader from './Loader';
 
@@ -85,12 +85,12 @@ const AddCardModal = ({ isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 transition-colors">
 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-gray-800">Add New Card</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-white">Add New Card</h2>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                         <X size={24} />
                     </button>
                 </div>
@@ -100,13 +100,13 @@ const AddCardModal = ({ isOpen, onClose }) => {
 
                     {/* Folder Selection */}
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Folder</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Folder</label>
                         {!isAddingFolder ? (
                             <div className="flex gap-2">
                                 <select
                                     value={selectedFolderId}
                                     onChange={(e) => setSelectedFolderId(e.target.value)}
-                                    className="flex-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                    className="flex-1 block w-full rounded-lg border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-800 dark:text-white"
                                 >
                                     <option value="">Select a folder (or default)</option>
                                     {folders.map((folder) => (
@@ -117,7 +117,7 @@ const AddCardModal = ({ isOpen, onClose }) => {
                                 </select>
                                 <button
                                     onClick={() => setIsAddingFolder(true)}
-                                    className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                     title="Create New Folder"
                                 >
                                     <Plus size={20} />
@@ -130,12 +130,12 @@ const AddCardModal = ({ isOpen, onClose }) => {
                                     value={newFolderName}
                                     onChange={(e) => setNewFolderName(e.target.value)}
                                     placeholder="New Folder Name"
-                                    className="flex-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                    className="flex-1 block w-full rounded-lg border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-800 dark:text-white"
                                     autoFocus
                                 />
                                 <button
                                     onClick={() => setIsAddingFolder(false)}
-                                    className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -145,14 +145,14 @@ const AddCardModal = ({ isOpen, onClose }) => {
 
                     {/* Front Image Upload */}
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Front Image</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Front Image</label>
                         <div className="flex gap-2">
                             <div
                                 onClick={() => frontInputRef.current.click()}
                                 className={`
-                  flex-1 relative h-40 rounded-xl border-2 border-dashed border-gray-300 
+                  flex-1 relative h-40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 
                   flex flex-col items-center justify-center cursor-pointer
-                  hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden
+                  hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group overflow-hidden
                   ${frontImage ? 'border-solid border-blue-500' : ''}
                 `}
                             >
@@ -160,10 +160,10 @@ const AddCardModal = ({ isOpen, onClose }) => {
                                     <img src={frontImage} alt="Front Preview" className="w-full h-full object-cover" />
                                 ) : (
                                     <>
-                                        <div className="p-3 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors mb-2">
+                                        <div className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors mb-2">
                                             <FileImage className="text-gray-400 group-hover:text-blue-500" size={24} />
                                         </div>
-                                        <span className="text-sm text-gray-500 group-hover:text-blue-600">Upload Image</span>
+                                        <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400">Upload Image</span>
                                     </>
                                 )}
                                 <input
@@ -177,7 +177,7 @@ const AddCardModal = ({ isOpen, onClose }) => {
 
                             <button
                                 onClick={() => openCamera('front')}
-                                className="w-16 h-40 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all text-gray-400 hover:text-blue-500"
+                                className="w-16 h-40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all text-gray-400 hover:text-blue-500"
                                 title="Take Photo"
                             >
                                 <Smartphone size={24} />
@@ -188,14 +188,14 @@ const AddCardModal = ({ isOpen, onClose }) => {
 
                     {/* Back Image Upload */}
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Back Image</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Back Image</label>
                         <div className="flex gap-2">
                             <div
                                 onClick={() => backInputRef.current.click()}
                                 className={`
-                  flex-1 relative h-40 rounded-xl border-2 border-dashed border-gray-300 
+                  flex-1 relative h-40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700
                   flex flex-col items-center justify-center cursor-pointer
-                  hover:border-purple-500 hover:bg-purple-50 transition-all group overflow-hidden
+                  hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all group overflow-hidden
                   ${backImage ? 'border-solid border-purple-500' : ''}
                 `}
                             >
@@ -203,10 +203,10 @@ const AddCardModal = ({ isOpen, onClose }) => {
                                     <img src={backImage} alt="Back Preview" className="w-full h-full object-cover" />
                                 ) : (
                                     <>
-                                        <div className="p-3 rounded-full bg-gray-100 group-hover:bg-purple-100 transition-colors mb-2">
+                                        <div className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-colors mb-2">
                                             <FileImage className="text-gray-400 group-hover:text-purple-500" size={24} />
                                         </div>
-                                        <span className="text-sm text-gray-500 group-hover:text-purple-600">Upload Image</span>
+                                        <span className="text-sm text-gray-500 group-hover:text-purple-600 dark:group-hover:text-purple-400">Upload Image</span>
                                     </>
                                 )}
                                 <input
@@ -220,7 +220,7 @@ const AddCardModal = ({ isOpen, onClose }) => {
 
                             <button
                                 onClick={() => openCamera('back')}
-                                className="w-16 h-40 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center hover:border-purple-500 hover:bg-purple-50 transition-all text-gray-400 hover:text-purple-500"
+                                className="w-16 h-40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all text-gray-400 hover:text-purple-500"
                                 title="Take Photo"
                             >
                                 <Smartphone size={24} />
@@ -231,10 +231,10 @@ const AddCardModal = ({ isOpen, onClose }) => {
 
 
                 {/* Footer */}
-                <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-200 rounded-lg transition-colors"
+                        className="px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
                     >
                         Cancel
                     </button>

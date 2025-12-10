@@ -1,31 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Search, X } from 'lucide-react';
-import { supabase } from '../supabaseClient';
+import { Menu, Search, X, Moon, Sun } from 'lucide-react';
+import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
+  const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     navigate('/login');
   };
 
@@ -40,8 +29,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white
-        ${scrolled ? 'shadow-md py-2' : 'border-b border-gray-100 py-4'}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white dark:bg-black dark:border-gray-800
+        ${scrolled ? 'shadow-md py-2' : 'border-b border-gray-100 dark:border-gray-800 py-4'}
       `}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +47,7 @@ const Navbar = () => {
             </div>
 
             <div className="flex flex-col justify-center">
-              <span className="text-xl  font-semibold text-gray-900 leading-none">
+              <span className="text-xl  font-semibold text-gray-900 dark:text-white leading-none">
                 <span className='font-light'>Hello</span>, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest'}
               </span>
             </div>
@@ -67,9 +56,17 @@ const Navbar = () => {
           {/* RIGHT SIDE: Search & Hamburger */}
           <div className="flex items-center gap-4">
 
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 flex items-center justify-center text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+            >
+              {theme === 'light' ? <Moon size={24} /> : <Sun size={24} />}
+            </button>
+
             {/* Search Button (Expandable) */}
             <div className={`
-              flex items-center transition-all duration-300 ease-in-out bg-white rounded-full
+              flex items-center transition-all duration-300 ease-in-out bg-white dark:bg-black rounded-full
               ${isSearchOpen ? 'w-48 sm:w-64 px-2 py-1 border border-gray-200 shadow-sm' : 'w-10 h-10 justify-center cursor-pointer'}
             `}>
               {isSearchOpen ? (
@@ -78,7 +75,7 @@ const Navbar = () => {
                   <input
                     type="text"
                     placeholder="Search..."
-                    className="ml-2 bg-transparent border-none outline-none text-sm text-gray-700 w-full placeholder-gray-400"
+                    className="ml-2 bg-transparent border-none outline-none text-sm text-gray-700 dark:text-white w-full placeholder-gray-400"
                     autoFocus
                     onBlur={() => !window.getSelection().toString() && setIsSearchOpen(false)}
                   />
@@ -86,7 +83,7 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="w-full h-full flex items-center justify-center text-gray-800 hover:text-gray-600 transition-colors"
+                  className="w-full h-full flex items-center justify-center text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
                 >
                   <Search size={24} strokeWidth={2.5} />
                 </button>
@@ -96,7 +93,7 @@ const Navbar = () => {
             {/* Hamburger Menu (Replaces Bell) */}
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="w-10 h-10 flex items-center justify-center text-gray-800 hover:text-gray-600 transition-colors"
+              className="w-10 h-10 flex items-center justify-center text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
             >
               <Menu size={28} strokeWidth={2.5} />
             </button>
@@ -114,12 +111,12 @@ const Navbar = () => {
           />
 
           {/* Menu Content */}
-          <div className="relative w-64 bg-white h-full shadow-2xl p-6 flex flex-col animate-in slide-in-from-right duration-200">
+          <div className="relative w-64 bg-white dark:bg-black dark:border-l dark:border-gray-800 h-full shadow-2xl p-6 flex flex-col animate-in slide-in-from-right duration-200">
             <div className="flex justify-between items-center mb-8">
-              <span className="text-lg font-bold text-gray-900">Menu</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">Menu</span>
               <button
                 onClick={() => setIsMenuOpen(false)}
-                className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               >
                 <X size={24} />
               </button>
@@ -130,14 +127,14 @@ const Navbar = () => {
                 <a
                   key={item}
                   href="#"
-                  className="text-lg font-medium text-gray-600 hover:text-gray-900 hover:translate-x-1 transition-all"
+                  className="text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:translate-x-1 transition-all"
                 >
                   {item}
                 </a>
               ))}
               <button
                 onClick={handleLogout}
-                className="text-lg font-medium text-gray-600 hover:text-gray-900 hover:translate-x-1 transition-all text-left"
+                className="text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:translate-x-1 transition-all text-left"
               >
                 Log Out
               </button>

@@ -1,1 +1,19 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    @apply dark:bg-black dark:text-white;
+}
+
+*,
+*::before,
+*::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -52,24 +52,24 @@ const Login = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h1 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+        <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-black">
+            <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg w-96 transition-colors duration-300">
+                <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white text-center">
                     {isSignUp ? 'Create Account' : 'Welcome Back'}
                 </h1>
-                <p className="text-gray-600 mb-8 text-center">
+                <p className="text-gray-600 dark:text-gray-400 mb-8 text-center">
                     {isSignUp ? 'Sign up to get started' : 'Sign in to access your wallet'}
                 </p>
 
                 <form onSubmit={handleAuth} className="space-y-4">
                     {isSignUp && (
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
                             <input
                                 type="text"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white dark:bg-gray-800 dark:text-white"
                                 placeholder="John Doe"
                                 required
                             />
@@ -77,24 +77,24 @@ const Login = () => {
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white dark:bg-gray-800 dark:text-white"
                             placeholder="you@example.com"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white dark:bg-gray-800 dark:text-white"
                             placeholder="••••••••"
                             required
                         />

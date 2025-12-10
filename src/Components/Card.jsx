@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Camera, Image as ImageIcon, Plus, Trash2, FileImage } from 'lucide-react';
 import { useDispatch } from 'react-redux';
-import { updateCard, deleteCard } from '../cards';
+import { updateCard, deleteCard } from '../store/cards';
 
 const FlipCard = ({ id, frontImage, backImage }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -63,11 +63,11 @@ const FlipCard = ({ id, frontImage, backImage }) => {
         >
 
           {/* Front Face */}
-          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white border border-black/5 bg-gradient-to-br from-white to-gray-100 z-[2]">
+          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 border border-black/5 dark:border-white/10 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-black z-[2]">
             {frontImage ? (
               <img src={frontImage} alt="Front" className="w-full h-full object-cover pointer-events-none" />
             ) : (
-              <div className="flex flex-col items-center text-gray-400 text-center p-5">
+              <div className="flex flex-col items-center text-gray-400 dark:text-gray-500 text-center p-5">
                 <ImageIcon size={48} />
                 <p className="mt-2 text-sm">Front Side</p>
               </div>
@@ -75,11 +75,11 @@ const FlipCard = ({ id, frontImage, backImage }) => {
           </div>
 
           {/* Back Face */}
-          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white border border-black/5 [transform:rotateY(180deg)] bg-gradient-to-br from-gray-200 to-gray-300">
+          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 border border-black/5 dark:border-white/10 [transform:rotateY(180deg)] bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-900">
             {backImage ? (
               <img src={backImage} alt="Back" className="w-full h-full object-cover pointer-events-none" />
             ) : (
-              <div className="flex flex-col items-center text-gray-400 text-center p-5">
+              <div className="flex flex-col items-center text-gray-400 dark:text-gray-500 text-center p-5">
                 <Camera size={48} />
                 <p className="mt-2 text-sm">Back Side</p>
               </div>
@@ -97,7 +97,7 @@ const FlipCard = ({ id, frontImage, backImage }) => {
 
             {/* Delete Option */}
             <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-150">
-              <span className="bg-white px-2 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-sm pointer-events-none whitespace-nowrap">Delete</span>
+              <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Delete</span>
               <button
                 className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-red-500"
                 onClick={handleDelete}
@@ -108,7 +108,7 @@ const FlipCard = ({ id, frontImage, backImage }) => {
 
             {/* Back Image Option */}
             <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-100">
-              <span className="bg-white px-2 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-sm pointer-events-none whitespace-nowrap">Back</span>
+              <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Back</span>
               <button
                 className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-violet-500"
                 onClick={() => triggerUpload(backInputRef)}
@@ -119,7 +119,7 @@ const FlipCard = ({ id, frontImage, backImage }) => {
 
             {/* Front Image Option */}
             <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-75">
-              <span className="bg-white px-2 py-1 rounded-md text-xs font-semibold text-gray-600 shadow-sm pointer-events-none whitespace-nowrap">Front</span>
+              <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Front</span>
               <button
                 className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-emerald-500"
                 onClick={() => triggerUpload(frontInputRef)}
