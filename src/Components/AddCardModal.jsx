@@ -2,15 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Camera, FileImage, Upload, Plus, Smartphone } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCard } from '../store/cards';
-import { fetchFolders, addFolder } from '../store/folders';
+import { addFolder } from '../store/folders';
 import CameraCapture from './CameraCapture';
 import Loader from './Loader';
 
-const AddCardModal = ({ isOpen, onClose }) => {
+const AddCardModal = ({ isOpen, onClose, defaultFolderId }) => {
     const [frontImage, setFrontImage] = useState(null);
     const [backImage, setBackImage] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [selectedFolderId, setSelectedFolderId] = useState('');
+    const [selectedFolderId, setSelectedFolderId] = useState(defaultFolderId || '');
     const [newFolderName, setNewFolderName] = useState('');
     const [isAddingFolder, setIsAddingFolder] = useState(false);
 
@@ -24,12 +24,12 @@ const AddCardModal = ({ isOpen, onClose }) => {
     const frontInputRef = useRef(null);
     const backInputRef = useRef(null);
 
-    // Fetch folders when modal opens
+    // Set default folder when modal opens and defaultFolderId changes
     useEffect(() => {
-        if (isOpen) {
-            dispatch(fetchFolders());
+        if (isOpen && defaultFolderId) {
+            setSelectedFolderId(defaultFolderId);
         }
-    }, [isOpen, dispatch]);
+    }, [isOpen, defaultFolderId]);
 
     if (!isOpen) return null;
 

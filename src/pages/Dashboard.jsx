@@ -57,8 +57,8 @@ const Dashboard = () => {
         )
     }
 
-    // Show loader if we are fetching folders
-    if (folderStatus === 'loading' || (folderStatus === 'idle' && !folders.length)) {
+    // Show loader only while actively fetching folders
+    if (folderStatus === 'loading') {
         return (
             <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-black">
                 <Loader size="large" />
@@ -167,6 +167,7 @@ const Dashboard = () => {
                 <AddCardModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
+                    defaultFolderId={currentFolder?.id}
                 />
             </div>
         </>

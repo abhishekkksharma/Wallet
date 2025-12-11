@@ -120,7 +120,11 @@ const cardsSlice = createSlice({
                 state.error = action.error.message;
             })
             // Add
+            .addCase(addCard.pending, (state) => {
+                state.status = 'loading';
+            })
             .addCase(addCard.fulfilled, (state, action) => {
+                state.status = 'succeeded';
                 const card = action.payload;
                 if (card.folder_id) {
                     if (!state.items[card.folder_id]) {
@@ -128,6 +132,10 @@ const cardsSlice = createSlice({
                     }
                     state.items[card.folder_id].push(card);
                 }
+            })
+            .addCase(addCard.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
             })
             // Update
             .addCase(updateCard.fulfilled, (state, action) => {
