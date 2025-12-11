@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../services/supabaseClient';
+import { persistor, store } from '../store/store';
 
 const AuthContext = createContext({});
 
@@ -32,7 +33,11 @@ export const AuthProvider = ({ children }) => {
         session,
         user,
         loading,
-        signOut: () => supabase.auth.signOut(),
+        signOut: async () => {
+            store.dispatch({ type: 'USER_LOGOUT' });
+            await persistor.purge();
+            return supabase.auth.signOut();
+        },
     };
 
     return (

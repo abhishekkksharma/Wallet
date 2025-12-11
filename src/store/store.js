@@ -11,10 +11,17 @@ const persistConfig = {
     whitelist: ['cards', 'folders'] // persist both cards and folders
 };
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
     cards: cardsReducer,
     folders: foldersReducer,
 });
+
+const rootReducer = (state, action) => {
+    if (action.type === 'USER_LOGOUT') {
+        return appReducer(undefined, action);
+    }
+    return appReducer(state, action);
+};
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
