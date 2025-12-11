@@ -19,7 +19,8 @@ export const fetchCards = createAsyncThunk('cards/fetchCards', async (folderId =
     const { data, error } = await query;
 
     if (error) throw error;
-    return data;
+    // Return folderId along with data so reducer knows where to put it
+    return { folderId, data };
 });
 
 export const addCard = createAsyncThunk('cards/addCard', async ({ frontImage, backImage, folderId } = {}) => {
@@ -96,8 +97,8 @@ export const deleteCard = createAsyncThunk('cards/deleteCard', async (id) => {
 const cardsSlice = createSlice({
     name: 'cards',
     initialState: {
-        items: [],
-        status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+        items: {}, // Structure: { [folderId]: [Card, Card, ...] }
+        status: 'idle', // global status
         error: null,
     },
     reducers: {},
@@ -109,7 +110,10 @@ const cardsSlice = createSlice({
             })
             .addCase(fetchCards.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.items = action.payload;
+                const { folderId, data } = action.payload;
+                if (folderId) {
+                    state.items[folderId] = data;
+                }
             })
             .addCase(fetchCards.rejected, (state, action) => {
                 state.status = 'failed';
@@ -117,18 +121,38 @@ const cardsSlice = createSlice({
             })
             // Add
             .addCase(addCard.fulfilled, (state, action) => {
-                state.items.push(action.payload);
+                const card = action.payload;
+                if (card.folder_id) {
+                    if (!state.items[card.folder_id]) {
+                        state.items[card.folder_id] = [];
+                    }
+                    state.items[card.folder_id].push(card);
+                }
             })
             // Update
             .addCase(updateCard.fulfilled, (state, action) => {
-                const index = state.items.findIndex(card => card.id === action.payload.id);
-                if (index !== -1) {
-                    state.items[index] = action.payload;
+                const card = action.payload;
+                if (state.items[card.folder_id]) {
+                    const index = state.items[card.folder_id].findIndex(c => c.id === card.id);
+                    if (index !== -1) {
+                        state.items[card.folder_id][index] = card;
+                    }
                 }
             })
             // Delete
             .addCase(deleteCard.fulfilled, (state, action) => {
-                state.items = state.items.filter(card => card.id !== action.payload);
+                // Since we only get the ID, we have to search through all folders
+                // Optimization: We could pass folderId to deleteCard if available
+                const id = action.payload;
+                Object.keys(state.items).forEach(folderId => {
+                    state.items[folderId] = state.items[folderId].filter(card => card.id !== id);
+                });
+            })
+            // Explicit Logout Handling
+            .addCase('USER_LOGOUT', (state) => {
+                state.items = {};
+                state.status = 'idle';
+                state.error = null;
             });
     },
 });

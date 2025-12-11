@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCards } from '../store/cards';
 import { fetchFolders, addFolder } from '../store/folders';
@@ -11,22 +12,59 @@ import Loader from '../Components/Loader';
 
 const Dashboard = () => {
     const dispatch = useDispatch()
-    const { items: cards = [], status: cardStatus = 'idle' } = useSelector((state) => state.cards || {})
-    const { items: folders = [], status: folderStatus = 'idle' } = useSelector((state) => state.folders || {})
+    const { items: cardsByFolder = {}, status: cardStatus = 'idle' } = useSelector((state) => state.cards || {})
+    const { items: folders = [], status: folderStatus = 'idle', ownerId: folderOwnerId = null } = useSelector((state) => state.folders || {})
+    const { user } = useAuth()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [currentFolder, setCurrentFolder] = useState(null) // null = root (folders view), object = specific folder
 
-    useEffect(() => {
-        if (folderStatus === 'idle') {
-            dispatch(fetchFolders())
-        }
-    }, [folderStatus, dispatch])
+    // Derived state for current folder's cards
+    const cards = currentFolder ? (cardsByFolder[currentFolder.id] || []) : []
 
     useEffect(() => {
-        if (currentFolder) {
-            dispatch(fetchCards(currentFolder.id))
+        // Debug Logging
+        console.log('Dashboard Effect:', { user: user?.id, folderStatus, folderOwnerId, foldersLen: folders.length });
+
+        // If we have a user and folder data, but the owner doesn't match, refetch
+        if (user && folderOwnerId && user.id !== folderOwnerId) {
+            console.log('Owner mismatch, refetching...');
+            dispatch(fetchFolders(user.id))
+            return
         }
-    }, [currentFolder, dispatch])
+
+        if (folderStatus === 'idle' && user) {
+            console.log('Status idle, fetching...');
+            dispatch(fetchFolders(user.id))
+        }
+    }, [folderStatus, dispatch, user, folderOwnerId])
+
+    // Cards fetch effect - MUST be before any early returns (React Rules of Hooks)
+    useEffect(() => {
+        if (currentFolder) {
+            // Only fetch if we don't have cards for this folder yet
+            if (!cardsByFolder[currentFolder.id]) {
+                dispatch(fetchCards(currentFolder.id))
+            }
+        }
+    }, [currentFolder, dispatch, cardsByFolder])
+
+    // Prevent showing stale data if ownership mismatch
+    if (user && folderOwnerId && user.id !== folderOwnerId) {
+        return (
+            <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-black">
+                <Loader size="large" />
+            </div>
+        )
+    }
+
+    // Show loader if we are fetching folders
+    if (folderStatus === 'loading' || (folderStatus === 'idle' && !folders.length)) {
+        return (
+            <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-black">
+                <Loader size="large" />
+            </div>
+        )
+    }
 
     const handleAddCard = () => {
         setIsModalOpen(true)
@@ -63,14 +101,7 @@ const Dashboard = () => {
                                 <ArrowLeft size={24} />
                             </button>
                         )}
-                        {/* <h1 className="text-3xl font-bold text-gray-800">
-              {currentFolder ? currentFolder.name : 'My Folders'}
-            </h1> */}
                     </div>
-
-                    {/* {!currentFolder && (
-            <h2 className="text-xl text-gray-500 font-medium">Select a folder</h2>
-          )} */}
                 </div>
 
                 {/* Content Area */}
@@ -91,11 +122,6 @@ const Dashboard = () => {
                                 <div className="col-span-full flex flex-col items-center justify-center text-gray-500 mt-20">
                                     <p className="text-xl">No folders yet.</p>
                                     <p>Create a folder or add a card to get started.</p>
-                                </div>
-                            )}
-                            {folderStatus === 'loading' && (
-                                <div className="col-span-full flex justify-center mt-20">
-                                    <Loader size="large" />
                                 </div>
                             )}
                         </div>

@@ -4,6 +4,7 @@ import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -40,7 +41,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <div className="relative">
               <img
-                src={user?.user_metadata?.avatar_url || "https://i.pinimg.com/736x/ff/c1/55/ffc155f86f4a96ebd68741b72461d387.jpg"}
+                src={user?.user_metadata?.avatar_url || "https://i.pinimg.com/736x/ab/73/ed/ab73ed4889f9e81678ede016203bc503.jpg"}
                 alt="User Avatar"
                 className="h-12 w-12 rounded-full object-cover border-2 border-white shadow-sm"
               />
@@ -57,12 +58,7 @@ const Navbar = () => {
           <div className="flex items-center gap-4">
 
             {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="w-10 h-10 flex items-center justify-center text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
-            >
-              {theme === 'light' ? <Moon size={24} /> : <Sun size={24} />}
-            </button>
+            <AnimatedThemeToggler />
 
             {/* Search Button (Expandable) */}
             {/* <div className={`
