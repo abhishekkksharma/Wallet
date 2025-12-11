@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Search, X, Moon, Sun } from 'lucide-react';
+import { Menu, Search, X, Moon, Sun, LogOut } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
@@ -119,7 +119,7 @@ const Navbar = () => {
             </div>
 
             <nav className="flex flex-col space-y-5">
-              {['Dashboard', 'Profile', 'Messages', 'Settings'].map((item) => (
+              {/* {['Dashboard', 'Profile', 'Messages', 'Settings'].map((item) => (
                 <a
                   key={item}
                   href="#"
@@ -127,13 +127,16 @@ const Navbar = () => {
                 >
                   {item}
                 </a>
-              ))}
+              ))} */}
+              <div className="flex items-center space-x-2 hover:translate-x-1">
+                <LogOut size={24} strokeWidth={2.5} />
               <button
                 onClick={handleLogout}
-                className="text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:translate-x-1 transition-all text-left"
+                className="text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white  transition-all text-left"
               >
                 Log Out
               </button>
+              </div>
             </nav>
           </div>
         </div>

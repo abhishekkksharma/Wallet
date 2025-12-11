@@ -36,6 +36,16 @@ export const addFolder = createAsyncThunk('folders/addFolder', async (name) => {
     return data;
 });
 
+export const deleteFolder = createAsyncThunk('folders/deleteFolder', async (folderId) => {
+    const { error } = await supabase
+        .from('folders')
+        .delete()
+        .eq('id', folderId);
+
+    if (error) throw error;
+    return folderId;
+});
+
 // Slice
 const foldersSlice = createSlice({
     name: 'folders',
@@ -62,6 +72,9 @@ const foldersSlice = createSlice({
             })
             .addCase(addFolder.fulfilled, (state, action) => {
                 state.items.push(action.payload);
+            })
+            .addCase(deleteFolder.fulfilled, (state, action) => {
+                state.items = state.items.filter(folder => folder.id !== action.payload);
             })
             // Explicit Logout Handling
             .addCase('USER_LOGOUT', (state) => {

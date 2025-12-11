@@ -9,9 +9,13 @@ import { X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
  * @param {function} onConfirm - Function called when confirm button is clicked (optional)
  * @param {string} title - Popup title
  * @param {string} message - Popup message
- * @param {string} type - 'info' | 'success' | 'warning' | 'error' | 'confirm'
+ * @param {string} type - 'info' | 'success' | 'warning' | 'error' | 'confirm' | 'input'
  * @param {string} confirmText - Text for confirm button (default: 'OK')
  * @param {string} cancelText - Text for cancel button (default: 'Cancel')
+ * @param {boolean} showInput - Whether to show an input field
+ * @param {string} inputValue - Value for the input field
+ * @param {function} onInputChange - Function called when input value changes
+ * @param {string} inputPlaceholder - Placeholder text for input field
  */
 const Popup = ({
     isOpen,
@@ -21,7 +25,11 @@ const Popup = ({
     message,
     type = 'info',
     confirmText = 'OK',
-    cancelText = 'Cancel'
+    cancelText = 'Cancel',
+    showInput = false,
+    inputValue = '',
+    onInputChange,
+    inputPlaceholder = 'Enter value...'
 }) => {
     if (!isOpen) return null;
 
@@ -30,10 +38,17 @@ const Popup = ({
         success: <CheckCircle className="text-green-500" size={28} />,
         warning: <AlertTriangle className="text-yellow-500" size={28} />,
         error: <AlertCircle className="text-red-500" size={28} />,
-        confirm: <AlertTriangle className="text-orange-500" size={28} />
+        confirm: <AlertTriangle className="text-orange-500" size={28} />,
+        input: <Info className="text-blue-500" size={28} />
     };
 
-    const isConfirmType = type === 'confirm';
+    const isConfirmType = type === 'confirm' || type === 'input';
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && onConfirm) {
+            onConfirm();
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -74,6 +89,19 @@ const Popup = ({
                     <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                         {message}
                     </p>
+
+                    {/* Input Field */}
+                    {showInput && (
+                        <input
+                            type="text"
+                            value={inputValue}
+                            onChange={(e) => onInputChange?.(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder={inputPlaceholder}
+                            autoFocus
+                            className="w-full mt-4 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-center"
+                        />
+                    )}
                 </div>
 
                 {/* Actions */}
@@ -92,12 +120,12 @@ const Popup = ({
                             if (!isConfirmType) onClose();
                         }}
                         className={`flex-1 max-w-[140px] px-4 py-2.5 rounded-xl text-sm font-medium text-white transition-colors ${type === 'error' || type === 'confirm'
-                                ? 'bg-red-500 hover:bg-red-600'
-                                : type === 'success'
-                                    ? 'bg-green-500 hover:bg-green-600'
-                                    : type === 'warning'
-                                        ? 'bg-yellow-500 hover:bg-yellow-600'
-                                        : 'bg-blue-500 hover:bg-blue-600'
+                            ? 'bg-red-500 hover:bg-red-600'
+                            : type === 'success'
+                                ? 'bg-green-500 hover:bg-green-600'
+                                : type === 'warning'
+                                    ? 'bg-yellow-500 hover:bg-yellow-600'
+                                    : 'bg-blue-500 hover:bg-blue-600'
                             }`}
                     >
                         {confirmText}
@@ -109,3 +137,4 @@ const Popup = ({
 };
 
 export default Popup;
+

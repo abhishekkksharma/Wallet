@@ -1,40 +1,82 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 const Folder = ({ name, onClick }) => {
+    const paper1Ref = useRef(null);
+    const paper2Ref = useRef(null);
+    const containerRef = useRef(null);
+
+    const handleMouseEnter = () => {
+        if (containerRef.current) {
+            containerRef.current.style.transform = 'translate3d(0, -12px, 0)';
+        }
+        if (paper1Ref.current) {
+            paper1Ref.current.style.transform = 'translate3d(0, -16px, 0) rotate(-6deg)';
+        }
+        if (paper2Ref.current) {
+            paper2Ref.current.style.transform = 'translate3d(0, -20px, 0) rotate(5deg)';
+        }
+    };
+
+    const handleMouseLeave = () => {
+        if (containerRef.current) {
+            containerRef.current.style.transform = 'translate3d(0, 0, 0)';
+        }
+        if (paper1Ref.current) {
+            paper1Ref.current.style.transform = 'translate3d(0, 0, 0) rotate(-3deg)';
+        }
+        if (paper2Ref.current) {
+            paper2Ref.current.style.transform = 'translate3d(0, 0, 0) rotate(2deg)';
+        }
+    };
+
     return (
         <div
+            ref={containerRef}
             onClick={onClick}
-            className="group relative w-full max-w-[300px] aspect-4/3 cursor-pointer 
-                       transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] 
-                       hover:-translate-y-2"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="group relative w-full max-w-[300px] aspect-4/3 cursor-pointer"
+            style={{
+                transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                transform: 'translate3d(0, 0, 0)',
+            }}
         >
             {/* Back Plate */}
-            <div className="absolute top-0 left-0 w-full h-full bg-[#5FB6F3] dark:bg-[#007AFF]
-                            rounded-xl shadow-lg 
-                            transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]
-                            group-hover:shadow-2xl"></div>
+            <div
+                className="absolute top-0 left-0 w-full h-full bg-[#5FB6F3] dark:bg-[#007AFF]
+                            rounded-xl shadow-lg group-hover:shadow-2xl"
+                style={{ transition: 'box-shadow 0.5s ease' }}
+            ></div>
 
             {/* Papers inside */}
-            <div className="absolute top-4 left-4 w-[85%] h-[80%] bg-white dark:bg-gray-200 rounded-lg 
-                            shadow-sm transform -rotate-3 opacity-90
-                            transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]
-                            group-hover:-translate-y-3 group-hover:-rotate-6 z-10"></div>
+            <div
+                ref={paper1Ref}
+                className="absolute top-4 left-4 w-[85%] h-[80%] bg-white dark:bg-gray-200 rounded-lg 
+                            shadow-sm opacity-90 z-10"
+                style={{
+                    transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: 'translate3d(0, 0, 0) rotate(-3deg)',
+                }}
+            ></div>
 
-            <div className="absolute top-4 left-6 w-[85%] h-[80%] bg-white dark:bg-gray-100 rounded-lg 
-                            shadow-sm transform rotate-2 opacity-95
-                            transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]
-                            group-hover:-translate-y-4 group-hover:rotate-4 z-10"></div>
+            <div
+                ref={paper2Ref}
+                className="absolute top-4 left-6 w-[85%] h-[80%] bg-white dark:bg-gray-100 rounded-lg 
+                            shadow-sm opacity-95 z-10"
+                style={{
+                    transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: 'translate3d(0, 0, 0) rotate(2deg)',
+                }}
+            ></div>
 
-            {/* Folder Tab (Back Layer) - Positioned to look like the tab */}
+            {/* Folder Tab (Back Layer) */}
             <div className="absolute -top-3 left-0 w-1/3 h-[18%] bg-[#5FB6F3] dark:bg-[#007AFF] 
-                            rounded-t-xl
-                            transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></div>
+                            rounded-t-xl"></div>
 
             {/* Front Plate */}
             <div className="absolute bottom-0 left-0 w-full h-[85%] bg-gradient-to-b from-[#7AC9F9] to-[#4AA3F0] dark:from-[#3395FF] dark:to-[#0066CC]
                             rounded-b-xl rounded-t-lg shadow-inner z-20
                             flex items-end justify-center pb-4 overflow-hidden
-                            transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]
                             border-t border-[#8ED4FC] dark:border-[#52A9FF]">
 
                 {/* Subtle shine/highlight */}

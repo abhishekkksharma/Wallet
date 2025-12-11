@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCards } from '../store/cards';
-import { fetchFolders, addFolder } from '../store/folders';
+import { fetchFolders, addFolder, deleteFolder } from '../store/folders';
 import Navbar from '../Components/Navbar';
 import FlipCard from '../Components/Card';
 import AddCardModal from '../Components/AddCardModal';
 import Folder from '../Components/Folder';
-import { Plus, ArrowLeft } from 'lucide-react';
+import { Plus, ArrowLeft, Trash2 } from 'lucide-react';
 import Loader from '../Components/Loader';
+import Popup from '../Components/Popup';
 
 const Dashboard = () => {
     const dispatch = useDispatch()
@@ -17,6 +18,10 @@ const Dashboard = () => {
     const { user } = useAuth()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [currentFolder, setCurrentFolder] = useState(null) // null = root (folders view), object = specific folder
+
+    // Popup states
+    const [folderNamePopup, setFolderNamePopup] = useState({ isOpen: false, name: '' })
+    const [deletePopup, setDeletePopup] = useState({ isOpen: false, folderId: null, folderName: '' })
 
     // Derived state for current folder's cards
     const cards = currentFolder ? (cardsByFolder[currentFolder.id] || []) : []
@@ -78,11 +83,27 @@ const Dashboard = () => {
         setCurrentFolder(null)
     }
 
-    const handleAddFolder = async () => {
-        const name = prompt("Enter folder name:")
-        if (name) {
-            await dispatch(addFolder(name))
+    const handleAddFolder = () => {
+        setFolderNamePopup({ isOpen: true, name: '' })
+    }
+
+    const confirmAddFolder = async () => {
+        if (folderNamePopup.name.trim()) {
+            await dispatch(addFolder(folderNamePopup.name.trim()))
         }
+        setFolderNamePopup({ isOpen: false, name: '' })
+    }
+
+    const handleDeleteFolder = (folderId, folderName) => {
+        setDeletePopup({ isOpen: true, folderId, folderName })
+    }
+
+    const confirmDeleteFolder = async () => {
+        if (deletePopup.folderId) {
+            await dispatch(deleteFolder(deletePopup.folderId))
+            setCurrentFolder(null) // Go back to folders view after deletion
+        }
+        setDeletePopup({ isOpen: false, folderId: null, folderName: '' })
     }
 
     return (
@@ -94,14 +115,28 @@ const Dashboard = () => {
                 <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         {currentFolder && (
-                            <button
-                                onClick={handleBack}
-                                className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                            >
-                                <ArrowLeft size={24} />
-                            </button>
+                            <>
+                                <button
+                                    onClick={handleBack}
+                                    className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors"
+                                >
+                                    <ArrowLeft size={24} />
+                                </button>
+                                <h2 className="text-2xl font-semibold">{currentFolder.name}</h2>
+                            </>
                         )}
                     </div>
+
+                    {/* Delete Folder Button - only shown inside folder */}
+                    {currentFolder && (
+                        <button
+                            onClick={() => handleDeleteFolder(currentFolder.id, currentFolder.name)}
+                            className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        >
+                            <Trash2 size={18} />
+                            <span className="hidden sm:inline">Delete Folder</span>
+                        </button>
+                    )}
                 </div>
 
                 {/* Content Area */}
@@ -169,9 +204,38 @@ const Dashboard = () => {
                     onClose={() => setIsModalOpen(false)}
                     defaultFolderId={currentFolder?.id}
                 />
+
+                {/* Folder Name Input Popup */}
+                <Popup
+                    isOpen={folderNamePopup.isOpen}
+                    onClose={() => setFolderNamePopup({ isOpen: false, name: '' })}
+                    onConfirm={confirmAddFolder}
+                    title="Create New Folder"
+                    message="Enter a name for your new folder"
+                    type="input"
+                    confirmText="Create"
+                    cancelText="Cancel"
+                    showInput={true}
+                    inputValue={folderNamePopup.name}
+                    onInputChange={(value) => setFolderNamePopup(prev => ({ ...prev, name: value }))}
+                    inputPlaceholder="Folder name..."
+                />
+
+                {/* Delete Folder Confirmation Popup */}
+                <Popup
+                    isOpen={deletePopup.isOpen}
+                    onClose={() => setDeletePopup({ isOpen: false, folderId: null, folderName: '' })}
+                    onConfirm={confirmDeleteFolder}
+                    title="Delete Folder"
+                    message={`Are you sure you want to delete "${deletePopup.folderName}"? This will also delete all cards inside.`}
+                    type="confirm"
+                    confirmText="Delete"
+                    cancelText="Cancel"
+                />
             </div>
         </>
     )
 }
 
 export default Dashboard;
+
