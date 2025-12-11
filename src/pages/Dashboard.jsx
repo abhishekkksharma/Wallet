@@ -139,14 +139,14 @@ const Dashboard = () => {
                                 />
                             ))}
 
-                            {cards.length === 0 && cardStatus === 'succeeded' && (
+                            {cards.length === 0 && cardStatus !== 'loading' && (
                                 <div className="col-span-full flex flex-col items-center justify-center text-gray-500 mt-20">
                                     <p className="text-xl">No cards in this folder.</p>
                                 </div>
                             )}
 
-                            {/* Loading State */}
-                            {cardStatus === 'loading' && (
+                            {/* Loading State - Only show when loading AND no cards exist yet */}
+                            {cardStatus === 'loading' && cards.length === 0 && (
                                 <div className="col-span-full flex justify-center mt-20">
                                     <Loader size="large" />
                                 </div>

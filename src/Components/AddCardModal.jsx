@@ -5,6 +5,7 @@ import { addCard } from '../store/cards';
 import { addFolder } from '../store/folders';
 import CameraCapture from './CameraCapture';
 import Loader from './Loader';
+import Popup from './Popup';
 
 const AddCardModal = ({ isOpen, onClose, defaultFolderId }) => {
     const [frontImage, setFrontImage] = useState(null);
@@ -17,6 +18,9 @@ const AddCardModal = ({ isOpen, onClose, defaultFolderId }) => {
     // Camera State
     const [showCamera, setShowCamera] = useState(false);
     const [activeSide, setActiveSide] = useState(null); // 'front' or 'back'
+
+    // Error Popup State
+    const [errorPopup, setErrorPopup] = useState({ isOpen: false, message: '' });
 
     const dispatch = useDispatch();
     const { items: folders } = useSelector((state) => state.folders);
@@ -77,7 +81,7 @@ const AddCardModal = ({ isOpen, onClose, defaultFolderId }) => {
             setNewFolderName('');
             setIsAddingFolder(false);
         } catch (error) {
-            alert('Failed to add card: ' + error.message);
+            setErrorPopup({ isOpen: true, message: error.message });
         } finally {
             setLoading(false);
         }
@@ -269,6 +273,16 @@ const AddCardModal = ({ isOpen, onClose, defaultFolderId }) => {
                     }}
                 />
             )}
+
+            {/* Error Popup */}
+            <Popup
+                isOpen={errorPopup.isOpen}
+                onClose={() => setErrorPopup({ isOpen: false, message: '' })}
+                title="Error"
+                message={`Failed to add card: ${errorPopup.message}`}
+                type="error"
+                confirmText="OK"
+            />
         </div>
     );
 };

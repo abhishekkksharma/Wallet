@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import Popup from '../Components/Popup';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -9,6 +10,9 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
     const [isSignUp, setIsSignUp] = useState(false);
+
+    // Popup State
+    const [popup, setPopup] = useState({ isOpen: false, type: 'info', title: '', message: '' });
 
     useEffect(() => {
         const checkUser = async () => {
@@ -35,7 +39,12 @@ const Login = () => {
                     },
                 });
                 if (error) throw error;
-                alert('Check your email for the login link!');
+                setPopup({
+                    isOpen: true,
+                    type: 'success',
+                    title: 'Check Your Email',
+                    message: 'We sent you a login link. Please check your email to continue.'
+                });
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
@@ -45,7 +54,12 @@ const Login = () => {
                 navigate('/');
             }
         } catch (error) {
-            alert(error.message);
+            setPopup({
+                isOpen: true,
+                type: 'error',
+                title: 'Authentication Error',
+                message: error.message
+            });
         } finally {
             setLoading(false);
         }
@@ -118,6 +132,16 @@ const Login = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Popup for messages */}
+            <Popup
+                isOpen={popup.isOpen}
+                onClose={() => setPopup({ ...popup, isOpen: false })}
+                title={popup.title}
+                message={popup.message}
+                type={popup.type}
+                confirmText="OK"
+            />
         </div>
     );
 };

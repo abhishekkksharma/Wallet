@@ -1,11 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Image as ImageIcon, Plus, Trash2, FileImage } from 'lucide-react';
+import { Camera, Image as ImageIcon, Pencil, Trash2, FileImage, X } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { updateCard, deleteCard } from '../store/cards';
+import CameraCapture from './CameraCapture';
+import Popup from './Popup';
 
 const FlipCard = ({ id, frontImage, backImage }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cameraMode, setCameraMode] = useState(null); // 'front' | 'back' | null
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const dispatch = useDispatch();
 
   // Refs for hidden file inputs
@@ -25,20 +29,37 @@ const FlipCard = ({ id, frontImage, backImage }) => {
       dispatch(updateCard({ id, updates }));
 
       if (side === 'front') {
-        if (isFlipped) setIsFlipped(false); // Show front
+        if (isFlipped) setIsFlipped(false);
       } else {
-        if (!isFlipped) setIsFlipped(true); // Show back
+        if (!isFlipped) setIsFlipped(true);
       }
-      setIsMenuOpen(false); // Close menu after selection
+      setIsMenuOpen(false);
     };
     reader.readAsDataURL(file);
   };
 
+  // Handle Camera Capture
+  const handleCameraCapture = (base64Image) => {
+    const updates = cameraMode === 'front' ? { front_image: base64Image } : { back_image: base64Image };
+    dispatch(updateCard({ id, updates }));
+
+    if (cameraMode === 'front') {
+      if (isFlipped) setIsFlipped(false);
+    } else {
+      if (!isFlipped) setIsFlipped(true);
+    }
+    setCameraMode(null);
+    setIsMenuOpen(false);
+  };
+
   // Delete Card
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this card?')) {
-      dispatch(deleteCard(id));
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteCard(id));
+    setShowDeleteConfirm(false);
   };
 
   // Trigger File Input Click
@@ -108,32 +129,54 @@ const FlipCard = ({ id, frontImage, backImage }) => {
           <div className="flex flex-col-reverse gap-2.5 items-end mb-1.5">
 
             {/* Delete Option */}
-            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-150">
-              <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Delete</span>
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-200">
+              <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Delete</span>
               <button
-                className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-red-500"
+                className="w-10 h-10 rounded-full border-none text-gray-600 dark:text-gray-300 cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-gray-200/80 dark:bg-gray-700/80 backdrop-blur-sm"
                 onClick={handleDelete}
               >
                 <Trash2 size={18} />
               </button>
             </div>
 
-            {/* Back Image Option */}
-            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-100">
-              <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Back</span>
+            {/* Back Camera Option */}
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-150">
+              <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Back (Camera)</span>
               <button
-                className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-violet-500"
-                onClick={() => triggerUpload(backInputRef)}
+                className="w-10 h-10 rounded-full border-none text-gray-600 dark:text-gray-300 cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-gray-200/80 dark:bg-gray-700/80 backdrop-blur-sm"
+                onClick={() => setCameraMode('back')}
               >
                 <Camera size={18} />
               </button>
             </div>
 
-            {/* Front Image Option */}
-            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-75">
-              <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Front</span>
+            {/* Back File Option */}
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-100">
+              <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Back (File)</span>
               <button
-                className="w-10 h-10 rounded-full border-none text-white cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-emerald-500"
+                className="w-10 h-10 rounded-full border-none text-gray-600 dark:text-gray-300 cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-gray-200/80 dark:bg-gray-700/80 backdrop-blur-sm"
+                onClick={() => triggerUpload(backInputRef)}
+              >
+                <FileImage size={18} />
+              </button>
+            </div>
+
+            {/* Front Camera Option */}
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-75">
+              <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Front (Camera)</span>
+              <button
+                className="w-10 h-10 rounded-full border-none text-gray-600 dark:text-gray-300 cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-gray-200/80 dark:bg-gray-700/80 backdrop-blur-sm"
+                onClick={() => setCameraMode('front')}
+              >
+                <Camera size={18} />
+              </button>
+            </div>
+
+            {/* Front File Option */}
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300">
+              <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Front (File)</span>
+              <button
+                className="w-10 h-10 rounded-full border-none text-gray-600 dark:text-gray-300 cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-gray-200/80 dark:bg-gray-700/80 backdrop-blur-sm"
                 onClick={() => triggerUpload(frontInputRef)}
               >
                 <FileImage size={18} />
@@ -143,19 +186,23 @@ const FlipCard = ({ id, frontImage, backImage }) => {
           </div>
         )}
 
-        {/* Main Toggle Button */}
+        {/* Main Toggle Button - Pencil Icon */}
         <button
           className={`
-            w-12 h-12 rounded-full text-white border-none shadow-lg cursor-pointer flex items-center justify-center 
+            w-12 h-12 rounded-full border-none shadow-lg cursor-pointer flex items-center justify-center 
             transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:scale-110
-            ${isMenuOpen ? 'rotate-45 bg-red-500 shadow-red-500/40' : 'bg-blue-500 shadow-blue-500/40'}
+            ${isMenuOpen
+              ? 'rotate-90 bg-gray-400/80 dark:bg-gray-600/80 text-gray-700 dark:text-gray-200 shadow-gray-400/40'
+              : 'bg-gray-200/80 dark:bg-gray-700/80 text-gray-600 dark:text-gray-300 shadow-gray-300/40 dark:shadow-gray-600/40'
+            }
+            backdrop-blur-sm
           `}
           onClick={(e) => {
             e.stopPropagation();
             setIsMenuOpen(!isMenuOpen);
           }}
         >
-          <Plus size={24} />
+          {isMenuOpen ? <X size={24} /> : <Pencil size={20} />}
         </button>
       </div>
 
@@ -175,7 +222,27 @@ const FlipCard = ({ id, frontImage, backImage }) => {
         className="hidden"
       />
 
-    </div >
+      {/* Camera Capture Modal */}
+      {cameraMode && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setCameraMode(null)}
+        />
+      )}
+
+      {/* Delete Confirmation Popup */}
+      <Popup
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Card"
+        message="Are you sure you want to delete this card? This action cannot be undone."
+        type="confirm"
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+
+    </div>
   );
 };
 
