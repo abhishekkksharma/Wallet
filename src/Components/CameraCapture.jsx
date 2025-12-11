@@ -13,8 +13,60 @@ const CameraCapture = ({ onCapture, onClose }) => {
     const [facingMode, setFacingMode] = useState("environment");
 
     const capture = useCallback(() => {
-        const imageSrc = webcamRef.current.getScreenshot();
-        onCapture(imageSrc);
+        const video = webcamRef.current.video;
+        if (!video) return;
+
+        // Get actual video dimensions
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+
+        // Get the container dimensions (what's displayed on screen)
+        const containerWidth = video.offsetWidth;
+        const containerHeight = video.offsetHeight;
+
+        // Card box dimensions (must match the CSS values in the overlay)
+        const boxWidth = 350;
+        const boxHeight = 220;
+
+        // Calculate scale factors between video and display
+        // The video uses object-cover, so we need to account for that
+        const videoAspect = videoWidth / videoHeight;
+        const containerAspect = containerWidth / containerHeight;
+
+        let scale, offsetX = 0, offsetY = 0;
+
+        if (videoAspect > containerAspect) {
+            // Video is wider - height fits, width is cropped
+            scale = videoHeight / containerHeight;
+            offsetX = (videoWidth - containerWidth * scale) / 2;
+        } else {
+            // Video is taller - width fits, height is cropped
+            scale = videoWidth / containerWidth;
+            offsetY = (videoHeight - containerHeight * scale) / 2;
+        }
+
+        // Calculate crop region in video coordinates
+        const cropX = offsetX + ((containerWidth - boxWidth) / 2) * scale;
+        const cropY = offsetY + ((containerHeight - boxHeight) / 2) * scale;
+        const cropWidth = boxWidth * scale;
+        const cropHeight = boxHeight * scale;
+
+        // Create canvas to crop the image
+        const canvas = document.createElement('canvas');
+        canvas.width = boxWidth;
+        canvas.height = boxHeight;
+        const ctx = canvas.getContext('2d');
+
+        // Draw only the cropped region
+        ctx.drawImage(
+            video,
+            cropX, cropY, cropWidth, cropHeight,  // Source rectangle
+            0, 0, boxWidth, boxHeight              // Destination rectangle
+        );
+
+        // Get cropped image as base64
+        const croppedImage = canvas.toDataURL('image/jpeg', 0.95);
+        onCapture(croppedImage);
     }, [webcamRef, onCapture]);
 
     const switchCamera = () => {
