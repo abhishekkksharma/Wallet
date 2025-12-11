@@ -51,19 +51,24 @@ const FlipCard = ({ id, frontImage, backImage }) => {
 
       {/* 3D Scene Container */}
       <div
-        className="w-[350px] h-[220px] max-w-[80vw] max-h-[calc(80vw*0.63)] [perspective:1000px] cursor-pointer z-10"
+        className="w-[350px] h-[220px] max-w-[80vw] max-h-[calc(80vw*0.63)] cursor-pointer z-10"
+        style={{ perspective: '1000px' }}
         onClick={() => setIsFlipped(!isFlipped)}
       >
         <div
-          className={`
-            w-full h-full relative transition-transform duration-700 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] 
-            [transform-style:preserve-3d] rounded-2xl shadow-xl
-            ${isFlipped ? '[transform:rotateY(180deg)]' : ''}
-          `}
+          className="w-full h-full relative rounded-2xl shadow-xl"
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            transition: 'transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          }}
         >
 
           {/* Front Face */}
-          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 border border-black/5 dark:border-white/10 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-black z-[2]">
+          <div
+            className="absolute w-full h-full rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 border border-black/5 dark:border-white/10 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-black z-[2]"
+            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+          >
             {frontImage ? (
               <img src={frontImage} alt="Front" className="w-full h-full object-cover pointer-events-none" />
             ) : (
@@ -75,7 +80,14 @@ const FlipCard = ({ id, frontImage, backImage }) => {
           </div>
 
           {/* Back Face */}
-          <div className="absolute w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 border border-black/5 dark:border-white/10 [transform:rotateY(180deg)] bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-900">
+          <div
+            className="absolute w-full h-full rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 border border-black/5 dark:border-white/10 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-900"
+            style={{
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)'
+            }}
+          >
             {backImage ? (
               <img src={backImage} alt="Back" className="w-full h-full object-cover pointer-events-none" />
             ) : (
@@ -163,7 +175,7 @@ const FlipCard = ({ id, frontImage, backImage }) => {
         className="hidden"
       />
 
-    </div>
+    </div >
   );
 };
 
