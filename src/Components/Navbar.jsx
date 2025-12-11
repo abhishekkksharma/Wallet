@@ -4,7 +4,7 @@ import { supabase } from '../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
+import { AnimatedThemeToggler } from "@/Components/ui/animated-theme-toggler"
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
