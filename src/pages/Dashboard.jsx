@@ -109,7 +109,7 @@ const Dashboard = () => {
     return (
         <>
             <Navbar />
-            <div className='min-h-screen dark:bg-black dark:text-white lg:m-10 pt-24 px-8 pb-12'>
+            <div className='min-h-screen dark:bg-black dark:text-white lg:m-10 pt-24 px-8 pb-12 mb-20'>
 
                 {/* Header Section */}
                 <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">
@@ -144,7 +144,7 @@ const Dashboard = () => {
 
                     {/* Folders Grid (Root View) */}
                     {!currentFolder && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 justify-items-center">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-12 gap-20 justify-items-center">
                             {folders.map((folder) => (
                                 <Folder
                                     key={folder.id}
@@ -193,7 +193,7 @@ const Dashboard = () => {
                 {/* Floating Action Button (Only in Folder View or if we want global add) */}
                 <button
                     onClick={currentFolder ? handleAddCard : handleAddFolder}
-                    className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-40"
+                    className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-60"
                 >
                     <Plus size={32} />
                 </button>
