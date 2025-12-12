@@ -49,7 +49,7 @@ const Navbar = () => {
 
             <div className="flex flex-col justify-center">
               <span className="text-xl  font-semibold text-gray-900 dark:text-white leading-none">
-                <span className='font-light'>Hello</span>, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest'}
+                <span className='font-light'>Hello</span>, {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Guest'}
               </span>
             </div>
           </div>
@@ -130,12 +130,12 @@ const Navbar = () => {
               ))} */}
               <div className="flex items-center space-x-2 hover:translate-x-1">
                 <LogOut size={24} strokeWidth={2.5} />
-              <button
-                onClick={handleLogout}
-                className="text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white  transition-all text-left"
-              >
-                Log Out
-              </button>
+                <button
+                  onClick={handleLogout}
+                  className="text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white  transition-all text-left"
+                >
+                  Log Out
+                </button>
               </div>
             </nav>
           </div>

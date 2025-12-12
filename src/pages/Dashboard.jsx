@@ -10,6 +10,8 @@ import Folder from '../Components/Folder';
 import { Plus, ArrowLeft, Trash2 } from 'lucide-react';
 import Loader from '../Components/Loader';
 import Popup from '../Components/Popup';
+import { DotPattern } from '../Components/ui/dot-pattern';
+import { cn } from '../lib/utils';
 
 const Dashboard = () => {
     const dispatch = useDispatch()
@@ -109,7 +111,18 @@ const Dashboard = () => {
     return (
         <>
             <Navbar />
-            <div className='min-h-screen dark:bg-black dark:text-white lg:m-10 pt-24 px-8 pb-12 mb-20'>
+            <div className='relative min-h-screen dark:bg-black dark:text-white lg:m-10 pt-24 px-8 pb-12 mb-20 overflow-hidden'>
+
+                {/* Dot Pattern Background */}
+                <DotPattern
+                    width={18}
+                    height={18}
+                    cr={1.2}
+                    className={cn(
+                        "[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
+                        "dark:fill-neutral-400/80 fill-neutral-500/70"
+                    )}
+                />
 
                 {/* Header Section */}
                 <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">

@@ -123,7 +123,7 @@ const FlipCard = ({ id, frontImage, backImage }) => {
       </div>
 
       {/* Floating Action Button Menu */}
-      <div className="absolute -bottom-5 -right-5 flex flex-col-reverse items-center gap-2.5 z-50">
+      <div className="absolute -bottom-5 -right-5 flex flex-col-reverse items-center gap-2.5 z-30">
 
         {isMenuOpen && (
           <div className="flex flex-col-reverse gap-2.5 items-end mb-1.5">
