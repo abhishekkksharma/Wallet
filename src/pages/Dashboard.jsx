@@ -111,7 +111,7 @@ const Dashboard = () => {
     return (
         <>
             <Navbar />
-            <div className='relative min-h-screen dark:bg-black dark:text-white lg:m-10 pt-24 px-8 pb-12 mb-20 overflow-hidden'>
+            <div className='relative min-h-screen dark:bg-black dark:text-white lg:m-10 pt-24 px-8 pb-12 mt-12 mb-20 overflow-hidden'>
 
                 {/* Dot Pattern Background */}
                 <DotPattern
@@ -119,7 +119,13 @@ const Dashboard = () => {
                     height={18}
                     cr={1.2}
                     className={cn(
-                        "[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
+                        // Fixed position for all devices
+                        "fixed inset-0 z-0",
+                        // Desktop: radial gradient mask
+                        "lg:[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
+                        // Mobile: rounder elliptical fade
+                        "[mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,white_60%,transparent_100%)]",
+                        "lg:[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
                         "dark:fill-neutral-400/80 fill-neutral-500/70"
                     )}
                 />
