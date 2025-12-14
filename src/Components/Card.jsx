@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Image as ImageIcon, Pencil, Trash2, FileImage, X } from 'lucide-react';
+import { Camera, Image as ImageIcon, Pencil, Trash2, FileImage, X, Download } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { updateCard, deleteCard } from '../store/cards';
 import CameraCapture from './CameraCapture';
 import Popup from './Popup';
+import { jsPDF } from 'jspdf';
 
 const FlipCard = ({ id, frontImage, backImage }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -60,6 +61,45 @@ const FlipCard = ({ id, frontImage, backImage }) => {
   const confirmDelete = () => {
     dispatch(deleteCard(id));
     setShowDeleteConfirm(false);
+  };
+
+  // Download Card as PDF
+  const handleDownloadPDF = () => {
+    if (!frontImage && !backImage) {
+      return; // Nothing to download
+    }
+
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a5' // Smaller format, good for card-sized images
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const imgWidth = pageWidth - (margin * 2);
+    const imgHeight = pageHeight - (margin * 2);
+
+    // Add front image on page 1
+    if (frontImage) {
+      pdf.text('Front', pageWidth / 2, 8, { align: 'center' });
+      pdf.addImage(frontImage, 'JPEG', margin, margin, imgWidth, imgHeight);
+    }
+
+    // Add back image on page 2
+    if (backImage) {
+      if (frontImage) {
+        pdf.addPage();
+      }
+      pdf.text('Back', pageWidth / 2, 8, { align: 'center' });
+      pdf.addImage(backImage, 'JPEG', margin, margin, imgWidth, imgHeight);
+    }
+
+    // Download the PDF
+    const timestamp = new Date().toISOString().slice(0, 10);
+    pdf.save(`card-${timestamp}.pdf`);
+    setIsMenuOpen(false);
   };
 
   // Trigger File Input Click
@@ -129,13 +169,25 @@ const FlipCard = ({ id, frontImage, backImage }) => {
           <div className="flex flex-col-reverse gap-2.5 items-end mb-1.5">
 
             {/* Delete Option */}
-            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-200">
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-250">
               <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Delete</span>
               <button
                 className="w-10 h-10 rounded-full border-none text-gray-600 dark:text-gray-300 cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-gray-200/80 dark:bg-gray-700/80 backdrop-blur-sm"
                 onClick={handleDelete}
               >
                 <Trash2 size={18} />
+              </button>
+            </div>
+
+            {/* Download PDF Option */}
+            <div className="flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300 delay-200">
+              <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-gray-600 dark:text-gray-300 shadow-sm pointer-events-none whitespace-nowrap">Download PDF</span>
+              <button
+                className="w-10 h-10 rounded-full border-none text-gray-600 dark:text-gray-300 cursor-pointer flex items-center justify-center shadow-md transition-transform hover:scale-110 bg-gray-200/80 dark:bg-gray-700/80 backdrop-blur-sm"
+                onClick={handleDownloadPDF}
+                disabled={!frontImage && !backImage}
+              >
+                <Download size={18} />
               </button>
             </div>
 
